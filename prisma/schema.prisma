@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  email         String      @unique
+  projects      Project[]
+}
+
+model Project {
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  profile       Profile     @relation(fields: [profileId], references: [id])
+  profileId     Int
+  title         String      @db.VarChar(255)
+  description   String?
+  startDate     DateTime    @default(now())
+  endDate       DateTime?
+  tasks         Task[]
+}
+
+model Task {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  date        String
+  time        DateTime?
+  project     Project   @relation(fields: [projectId], references: [id])
+  projectId   Int       @unique
+  title       String?   @db.VarChar(255)
+  isComplete  Boolean   @default(false)
+}
